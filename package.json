@@ -1,0 +1,36 @@
+{
+  "name": "ansible-vault",
+  "version": "1.0.0-0",
+  "description": "An ansible vault compatible en- and decryption library for javascript",
+  "keywords": [
+    "ansible",
+    "vault"
+  ],
+  "homepage": "https://github.com/commenthol/ansible-vault#readme",
+  "bugs": {
+    "url": "https://github.com/commenthol/ansible-vault/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/commenthol/ansible-vault.git"
+  },
+  "license": "MIT",
+  "author": "commenthol <commenthol@gmail.com>",
+  "main": "src",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "coverage": "nyc -r text mocha",
+    "lint": "eslint src test",
+    "test": "mocha",
+    "posttest": "npm run lint"
+  },
+  "dependencies": {
+    "binascii": "0.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "mocha": "^6.1.4"
+  }
+}

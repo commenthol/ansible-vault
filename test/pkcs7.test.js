@@ -1,0 +1,83 @@
+const assert = require('assert')
+const { pad, unpad } = require('../src/pkcs7')
+
+describe('pkcs#7', function () {
+  describe('pad', function () {
+    it('shall throw if blocksize is greater 256', function () {
+      const b = Buffer.from('a')
+      assert.throws(function () {
+        Buffer.concat([
+          b,
+          pad(b.length, 512)
+        ])
+      }, /can't pad blocks larger 256 bytes/)
+    })
+
+    it('shall pad a buffer of length 1', function () {
+      const b = Buffer.from('a')
+      const padded = Buffer.concat([
+        b,
+        pad(b.length, 8)
+      ])
+      assert.strictEqual(padded.length, 8)
+      assert.deepStrictEqual(padded, Buffer.from(new Uint8Array([97, 7, 7, 7, 7, 7, 7, 7])))
+    })
+
+    it('shall pad a buffer of length 6', function () {
+      const b = Buffer.from('aaaaaa')
+      const padded = Buffer.concat([
+        b,
+        pad(b.length, 8)
+      ])
+      assert.strictEqual(padded.length, 8)
+      assert.deepStrictEqual(padded, Buffer.from(new Uint8Array([97, 97, 97, 97, 97, 97, 2, 2])))
+    })
+
+    it('shall not pad if block size fits', function () {
+      const b = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])
+      const padded = Buffer.concat([
+        b,
+        pad(b.length, 8)
+      ])
+      assert.strictEqual(padded.length, 8)
+      assert.deepStrictEqual(padded, Buffer.from(b))
+    })
+  })
+
+  describe('unpad', function () {
+    it('shall remove padding for length 1', function () {
+      const b = Buffer.from(new Uint8Array([97, 7, 7, 7, 7, 7, 7, 7]))
+      const unpadded = unpad(b, 8)
+      assert.strictEqual(unpadded.length, 1)
+      assert.deepStrictEqual(unpadded, Buffer.from('a'))
+    })
+    it('shall remove padding for length 6', function () {
+      const b = Buffer.from(new Uint8Array([97, 97, 97, 97, 97, 97, 2, 2]))
+      const unpadded = unpad(b, 8)
+      assert.strictEqual(unpadded.length, 6)
+      assert.deepStrictEqual(unpadded, Buffer.from('aaaaaa'))
+    })
+    it('shall not remove padding on anomaly', function () {
+      const b = Buffer.from(new Uint8Array([97, 7, 7, 6, 7, 7, 7, 7]))
+      const unpadded = unpad(b, 8)
+      assert.strictEqual(unpadded.length, 8)
+      assert.deepStrictEqual(unpadded, b)
+    })
+    it('shall not remove padding if last byte is 0', function () {
+      const b = Buffer.from(new Uint8Array([97, 7, 7, 7, 7, 7, 7, 0]))
+      const unpadded = unpad(b, 8)
+      assert.strictEqual(unpadded.length, 8)
+      assert.deepStrictEqual(unpadded, b)
+    })
+    it('shall not remove bytes', function () {
+      const b = Buffer.from(new Uint8Array([8, 8, 8, 8, 8, 8, 8, 8]))
+      const unpadded = unpad(b, 8)
+      assert.strictEqual(unpadded.length, 8)
+      assert.deepStrictEqual(unpadded, b)
+    })
+  })
+
+  describe('pad-unpad', function () {
+
+  })
+})

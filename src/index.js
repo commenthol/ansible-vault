@@ -1,6 +1,7 @@
 const { promisify } = require('util')
 const crypto = require('crypto')
 const { hexlify, unhexlify } = require('binascii')
+const pkcs7 = require('./pkcs7')
 
 const pbkdf2 = promisify(crypto.pbkdf2)
 
@@ -38,25 +39,24 @@ class Vault {
     if (!this[PASSWORD]) throw new Error('No password')
 
     const derivedKey = await pbkdf2(this[PASSWORD], salt, 10000, 80, DIGEST)
-    const aesKey = derivedKey.slice(0, 32)
+    const key = derivedKey.slice(0, 32)
     const hmacKey = derivedKey.slice(32, 64)
-    const aesNonce = derivedKey.slice(64, 80)
+    const iv = derivedKey.slice(64, 80)
     return {
-      aesKey,
+      key,
       hmacKey,
-      aesNonce
+      iv
     }
   }
 
   async encrypt (secret, id) {
     const salt = crypto.randomBytes(32)
-    const { aesKey, hmacKey, aesNonce } = await this._derivedKey(salt)
+    const { key, hmacKey, iv } = await this._derivedKey(salt)
 
-    secret = secret + Array(16 - (secret.length % 16)).fill('\r').join('') // PKCS7 padding
-
-    const cipherF = crypto.createCipheriv(CIPHER, aesKey, aesNonce)
+    const cipherF = crypto.createCipheriv(CIPHER, key, iv)
     const ciphertext = Buffer.concat([
       cipherF.update(secret),
+      cipherF.update(pkcs7.pad(secret.length, 16)),
       cipherF.final()
     ])
 
@@ -83,19 +83,18 @@ class Vault {
 
     if (!salt || !hmac || !ciphertext) throw new Error('Invalid vault')
 
-    const { aesKey, hmacKey, aesNonce } = await this._derivedKey(salt)
+    const { key, hmacKey, iv } = await this._derivedKey(salt)
     const hmacComp = this._hmac(hmacKey, ciphertext)
 
     if (Buffer.compare(hmacComp, hmac) !== 0) throw new Error('Integrity check failed')
 
-    const cipherF = crypto.createDecipheriv(CIPHER, aesKey, aesNonce)
-    const buffer = Buffer.concat([
+    const cipherF = crypto.createDecipheriv(CIPHER, key, iv)
+    const buffer = pkcs7.unpad(Buffer.concat([
       cipherF.update(ciphertext),
       cipherF.final()
-    ])
+    ]), 16)
 
     return buffer.toString()
-      .replace(/\r{1,16}$/, '') // remove PKCS7 padding
   }
 }
 

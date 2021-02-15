@@ -33,14 +33,14 @@ describe('pkcs#7', function () {
       assert.deepStrictEqual(padded, Buffer.from(new Uint8Array([97, 97, 97, 97, 97, 97, 2, 2])))
     })
 
-    it('shall not pad if block size fits', function () {
+    it('shall pad if block size fits', function () {
       const b = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])
       const padded = Buffer.concat([
         b,
         pad(b.length, 8)
       ])
-      assert.strictEqual(padded.length, 8)
-      assert.deepStrictEqual(padded, Buffer.from(b))
+      assert.strictEqual(padded.length, 16)
+      assert.deepStrictEqual(padded, Buffer.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8])))
     })
   })
 

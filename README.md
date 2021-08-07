@@ -1,7 +1,7 @@
 # ansible-vault
 
 [![NPM version](https://badge.fury.io/js/ansible-vault.svg)](https://www.npmjs.com/package/ansible-vault/)
-[![Build Status](https://secure.travis-ci.org/commenthol/ansible-vault.svg?branch=master)](https://travis-ci.org/commenthol/ansible-vault)
+[![Build Status](https://api.travis-ci.com/commenthol/ansible-vault.svg?branch=master)](https://travis-ci.com/commenthol/ansible-vault)
 
 > An Ansible vault compatible en- and decryption library for javascript
 

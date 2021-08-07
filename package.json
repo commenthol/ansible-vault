@@ -1,6 +1,6 @@
 {
   "name": "ansible-vault",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An ansible vault compatible en- and decryption library for javascript",
   "keywords": [
     "ansible",

@@ -7,7 +7,7 @@ function pad (messageLength, blocksize) {
 function unpad (padded, blocksize) {
   let len = padded.length
   const byte = padded[len - 1]
-  if (byte >= blocksize) return padded
+  if (byte > blocksize) return padded
   for (let i = len - byte; i < len; i++) {
     if (padded[i] !== byte) {
       return padded

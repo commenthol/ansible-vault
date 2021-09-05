@@ -69,15 +69,40 @@ describe('pkcs#7', function () {
       assert.strictEqual(unpadded.length, 8)
       assert.deepStrictEqual(unpadded, b)
     })
-    it('shall not remove bytes', function () {
+    it('shall remove bytes if block size fits', function () {
       const b = Buffer.from(new Uint8Array([8, 8, 8, 8, 8, 8, 8, 8]))
       const unpadded = unpad(b, 8)
-      assert.strictEqual(unpadded.length, 8)
-      assert.deepStrictEqual(unpadded, b)
+      assert.strictEqual(unpadded.length, 0)
     })
   })
 
   describe('pad-unpad', function () {
-
+    it('block size does not fit', function () {
+      const b = new Uint8Array([7])
+      const padded = Buffer.concat([
+        b,
+        pad(b.length, 8)
+      ])
+      const unpadded = unpad(padded, 8)
+      assert.deepStrictEqual(unpadded, Buffer.from(b))
+    })
+    it('block size does not fit len=3', function () {
+      const b = new Uint8Array([5, 5, 5])
+      const padded = Buffer.concat([
+        b,
+        pad(b.length, 8)
+      ])
+      const unpadded = unpad(padded, 8)
+      assert.deepStrictEqual(unpadded, Buffer.from(b))
+    })
+    it('block size fits', function () {
+      const b = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])
+      const padded = Buffer.concat([
+        b,
+        pad(b.length, 8)
+      ])
+      const unpadded = unpad(padded, 8)
+      assert.deepStrictEqual(unpadded, Buffer.from(b))
+    })
   })
 })

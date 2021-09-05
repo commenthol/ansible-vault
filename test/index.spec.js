@@ -1,5 +1,6 @@
 const { strictEqual } = require('assert')
 const { Vault } = require('..')
+const log = require('debug')('test')
 
 const vault = `$ANSIBLE_VAULT;1.1;AES256
 37333730633265356131656330306537623666613631386461653831666535626462396366663434
@@ -28,9 +29,6 @@ const vaultBadValues = `$ANSIBLE_VAULT;1.2;AES256;prod
 63336239663162643136626133613962373230376562323362643336393862626661383461306366
 6463623430326XX6650a376235366430353633353338313935363564366433613863343230333864
 30353030346364363065373137356239386231303862373939313735303131373139`
-
-const log = () => {}
-// const log = console.log
 
 describe('ansible-vault', function () {
   const secret = 'password: superSecret123!'
@@ -145,6 +143,20 @@ describe('ansible-vault', function () {
 
     it('shall encrypt and decrypt', function () {
       const v = new Vault({ password })
+      return v.encrypt(secret, 'prod')
+        .then(_vault => {
+          log(_vault)
+          strictEqual(_vault.substring(0, 30), '$ANSIBLE_VAULT;1.2;AES256;prod')
+          return v.decrypt(_vault)
+        })
+        .then(_secret => {
+          strictEqual(_secret, secret)
+        })
+    })
+
+    it('shall encrypt and decrypt (block size fits)', function () {
+      const v = new Vault({ password })
+      const secret = 'abcdefgh'
       return v.encrypt(secret, 'prod')
         .then(_vault => {
           log(_vault)

@@ -169,7 +169,7 @@ describe('ansible-vault', function () {
     })
   })
 
-  describe('1.4', function () {
+  describe('sync operations', function () {
     it('shall decrypt synchronously', function () {
       const v = new Vault({ password })
       strictEqual(v.decryptSync(vault), secret)

@@ -112,9 +112,6 @@ class Vault {
   }
 
   _unpack (vault, id) {
-    if (!id) {
-      console.log('no id defined')
-    }
     const [ header, ...hexValues ] = vault.split('\n')
 
     const _id = this._checkHeader(header)

@@ -17,23 +17,26 @@
   "license": "MIT",
   "author": "commenthol <commenthol@gmail.com>",
   "main": "src",
+  "types": "types",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "ci": "npm run lint && npm run coverage",
+    "ci": "npm run coverage && npm run lint && npm run types",
     "coverage": "c8 -r lcov -r html -r text mocha",
     "lint": "eslint src test",
     "test": "mocha",
-    "posttest": "npm run lint"
+    "types": "rm -r types; tsc --emitDeclarationOnly true --noEmitOnError"
   },
   "dependencies": {
     "binascii": "0.0.2"
   },
   "devDependencies": {
+    "@types/node": "^16.11.25",
     "c8": "^7.11.0",
     "debug": "^4.3.3",
-    "eslint": "^7.32.0",
-    "mocha": "^9.2.1"
+    "eslint": "^8.9.0",
+    "mocha": "^9.2.1",
+    "typescript": "^4.5.5"
   }
 }

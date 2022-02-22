@@ -3,6 +3,7 @@ node_modules/
 coverage/
 test/
 tmp/
+tsconfig.json
 *.tgz
 *.log
 .*

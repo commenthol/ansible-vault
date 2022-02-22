@@ -25,6 +25,7 @@
     "ci": "npm run coverage && npm run lint && npm run types",
     "coverage": "c8 -r lcov -r html -r text mocha",
     "lint": "eslint src test",
+    "prepublishOnly": "npm run ci",
     "test": "mocha",
     "types": "rm -r types; tsc --emitDeclarationOnly true --noEmitOnError"
   },

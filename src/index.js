@@ -12,11 +12,34 @@ const DIGEST = 'sha256'
 
 const PASSWORD = Symbol()
 
+/**
+ * @typedef DerivedKey
+ * @property {Buffer} key
+ * @property {Buffer} hmacKey
+ * @property {Buffer} iv
+ */
+
+/**
+ * @typedef Unpacked
+ * @property {Buffer} salt
+ * @property {Buffer} hmac 
+ * @property {Buffer} ciphertext
+ */
+
 class Vault {
+  /**
+   * @param {object} param0 
+   * @param {string} param0.password vault password
+   */
   constructor ({ password }) {
     this[PASSWORD] = password
   }
 
+  /**
+   * @private
+   * @param {string} header 
+   * @returns {boolean|string} for 1.2 "id" and for 1.1 `true` if header is ok, otherwise false
+   */
   _checkHeader (header) {
     if (!header) {
       return false
@@ -29,12 +52,23 @@ class Vault {
     return false
   }
 
+  /**
+   * @private
+   * @param {Buffer} key 
+   * @param {Buffer} ciphertext 
+   * @returns {Buffer}
+   */
   _hmac (key, ciphertext) {
     const hmac = crypto.createHmac(DIGEST, key)
     hmac.update(ciphertext)
     return hmac.digest()
   }
 
+  /**
+   * @private
+   * @param {Buffer} salt 
+   * @returns {Promise<DerivedKey>}
+   */
   async _derivedKey (salt) {
     if (!this[PASSWORD]) throw new Error('No password')
 
@@ -42,13 +76,23 @@ class Vault {
     return this._deriveKey(derivedKey)
   }
 
-  _derivedKeySync (salt) {
+  /**
+   * @private
+   * @param {Buffer} salt 
+   * @returns {DerivedKey}
+   */
+   _derivedKeySync (salt) {
     if (!this[PASSWORD]) throw new Error('No password')
 
     const derivedKey = crypto.pbkdf2Sync(this[PASSWORD], salt, 10000, 80, DIGEST)
     return this._deriveKey(derivedKey)
   }
 
+  /**
+   * 
+   * @param {Buffer} derivedKey 
+   * @returns {DerivedKey}
+   */
   _deriveKey (derivedKey) {
     const key = derivedKey.slice(0, 32)
     const hmacKey = derivedKey.slice(32, 64)
@@ -60,18 +104,38 @@ class Vault {
     }
   }
 
+  /**
+   * Encrypt `secret` text 
+   * @param {string} secret
+   * @param {string} id 
+   * @returns {Promise<string>} encrypted string
+   */
   async encrypt (secret, id) {
     const salt = crypto.randomBytes(32)
     const derivedKey = await this._derivedKey(salt)
     return this._cipher(secret, id, salt, derivedKey)
   }
 
-  encryptSync (secret, id) {
+  /**
+   * Synchronously encrypt `secret` text 
+   * @param {string} secret
+   * @param {string} id 
+   * @returns {string} encrypted string
+   */
+   encryptSync (secret, id) {
     const salt = crypto.randomBytes(32)
     const derivedKey = this._derivedKeySync(salt)
     return this._cipher(secret, id, salt, derivedKey)
   }
 
+  /**
+   * @private
+   * @param {string} secret 
+   * @param {string} id 
+   * @param {Buffer} salt 
+   * @param {DerivedKey} derivedKey 
+   * @returns 
+   */
   _cipher (secret, id, salt, derivedKey) {
     const { key, hmacKey, iv } = derivedKey
     const cipherF = crypto.createCipheriv(CIPHER, key, iv)
@@ -87,7 +151,13 @@ class Vault {
     return this._pack(id, hex)
   }
 
-  _decypher (unpacked, derivedKey) {
+  /**
+   * @private
+   * @param {Unpacked} unpacked 
+   * @param {DerivedKey} derivedKey 
+   * @returns 
+   */
+   _decypher (unpacked, derivedKey) {
     const { hmac, ciphertext } = unpacked
     const { key, hmacKey, iv } = derivedKey
     const hmacComp = this._hmac(hmacKey, ciphertext)
@@ -103,6 +173,12 @@ class Vault {
     return buffer.toString()
   }
 
+  /**
+   * @private
+   * @param {string|undefined} id optional id 
+   * @param {string} hex hex encoded  
+   * @returns {string} ansible encoded secret
+   */
   _pack (id, hex) {
     const header = id
       ? `${HEADER};1.2;${AES256};${id}\n`
@@ -111,7 +187,13 @@ class Vault {
     return header + hexlify(hex).match(/.{1,80}/g).join('\n')
   }
 
-  _unpack (vault, id) {
+  /**
+   * @private
+   * @param {string} vault
+   * @param {string|undefined} id optional id 
+   * @returns {Unpacked|undefined}
+   */
+   _unpack (vault, id) {
     const [ header, ...hexValues ] = vault.split('\n')
 
     const _id = this._checkHeader(header)
@@ -127,7 +209,13 @@ class Vault {
     return { salt, hmac, ciphertext }
   }
 
-  async decrypt (vault, id) {
+  /**
+   * Decrypt vault
+   * @param {string} vault
+   * @param {string|undefined} id optional id 
+   * @returns {Promise<string|undefined>}
+   */
+   async decrypt (vault, id) {
     const unpacked = this._unpack(vault, id)
     if (!unpacked) return
     const { salt } = unpacked
@@ -136,7 +224,13 @@ class Vault {
     return this._decypher(unpacked, derivedKey)
   }
 
-  decryptSync (vault, id) {
+  /**
+   * Synchronously decrypt vault
+   * @param {string} vault
+   * @param {string|undefined} id optional id 
+   * @returns {string|undefined}
+   */
+   decryptSync (vault, id) {
     const unpacked = this._unpack(vault, id)
     if (!unpacked) return
     const { salt } = unpacked

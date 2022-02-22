@@ -1,7 +1,7 @@
-# ansible-vault
+[![NPM version](https://img.shields.io/npm/v/ansible-vault) ![npm](https://img.shields.io/npm/dm/ansible-vault)](https://www.npmjs.com/package/ansible-vault/)
+[![Build Status](https://github.com/commenthol/ansible-vault/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/commenthol/ansible-vault/actions/workflows/ci.yml?query=branch%3Amaster)
 
-[![NPM version](https://badge.fury.io/js/ansible-vault.svg)](https://www.npmjs.com/package/ansible-vault/)
-[![Build Status](https://api.travis-ci.com/commenthol/ansible-vault.svg?branch=master)](https://app.travis-ci.com/commenthol/ansible-vault)
+# ansible-vault
 
 > An Ansible vault compatible en- and decryption library for javascript
 

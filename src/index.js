@@ -109,7 +109,7 @@ class Vault {
    * @param {string} secret
    * @param {string} id 
    * @returns {Promise<string>} encrypted string
-   */f
+   */
   async encrypt (secret, id) {
     const salt = crypto.randomBytes(32)
     const derivedKey = await this._derivedKey(salt)

@@ -30,6 +30,13 @@ const vaultBadValues = `$ANSIBLE_VAULT;1.2;AES256;prod
 6463623430326XX6650a376235366430353633353338313935363564366433613863343230333864
 30353030346364363065373137356239386231303862373939313735303131373139`
 
+const vaultIdCLRF = `$ANSIBLE_VAULT;1.2;AES256;prod\r
+38373439396163396339326133633263383839646331346366396562666335653162346332646265\r
+6164363632396564306131373030306630613834353664630a656538316632613366366632653463\r
+66366535636562393063383665376563383838316364313661636462343333663961353438343831\r
+3863303135376437660a346135623536376631666130376336306263376666396336323261306135\r
+39373133326337656366313132363763363465343364613461393763343731313363`
+
 describe('ansible-vault', function () {
   const secret = 'password: superSecret123!'
   const password = 'pa$$w0rd'
@@ -132,6 +139,14 @@ describe('ansible-vault', function () {
           strictEqual(_secret, secret)
         })
     })
+    it('shall decrypt with CLRF', function () {
+      const v = new Vault({ password })
+      return v.decrypt(vaultIdCLRF, 'prod')
+        .then(_secret => {
+          strictEqual(_secret, secret)
+        })
+    })
+
 
     it('shall not decrypt if id doesn\'t match', function () {
       const v = new Vault({ password })

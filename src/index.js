@@ -109,7 +109,7 @@ class Vault {
    * @param {string} secret
    * @param {string} id 
    * @returns {Promise<string>} encrypted string
-   */
+   */f
   async encrypt (secret, id) {
     const salt = crypto.randomBytes(32)
     const derivedKey = await this._derivedKey(salt)
@@ -194,14 +194,14 @@ class Vault {
    * @returns {Unpacked|undefined}
    */
    _unpack (vault, id) {
-    const [ header, ...hexValues ] = vault.split('\n')
+    const [ header, ...hexValues ] = vault.split(/\r?\n/)
 
     const _id = this._checkHeader(header)
     if (!_id) throw new Error('Bad vault header')
     if (id && id !== _id) return // only decrypt if `id` is matching id in header
 
     const [ salt, hmac, ciphertext ] = unhexlify(hexValues.join(''))
-      .split('\n')
+      .split(/\r?\n/)
       .map(hex => Buffer.from(hex, 'hex'))
 
     if (!salt || !hmac || !ciphertext) throw new Error('Invalid vault')

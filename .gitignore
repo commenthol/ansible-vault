@@ -3,3 +3,5 @@ coverage/
 tmp/
 *.tgz
 *.log
+pnpm-lock.yaml
+package-lock.json

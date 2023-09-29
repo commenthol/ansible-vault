@@ -1,9 +1,0 @@
-node_modules/
-.nyc_output/
-coverage/
-test/
-tmp/
-tsconfig.json
-*.tgz
-*.log
-.*

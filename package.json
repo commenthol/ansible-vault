@@ -18,26 +18,27 @@
   "author": "commenthol <commenthol@gmail.com>",
   "main": "src",
   "types": "types",
-  "directories": {
-    "test": "test"
-  },
+  "files": [
+    "src",
+    "types"
+  ],
   "scripts": {
     "ci": "npm run coverage && npm run lint && npm run types",
     "coverage": "c8 -r lcov -r html -r text mocha",
     "lint": "eslint src test",
     "prepublishOnly": "npm run ci",
     "test": "mocha",
-    "types": "rm -r types; tsc --emitDeclarationOnly true --noEmitOnError"
+    "types": "rm -r types; tsc"
   },
   "dependencies": {
     "binascii": "0.0.2"
   },
   "devDependencies": {
-    "@types/node": "^16.11.25",
-    "c8": "^7.11.0",
-    "debug": "^4.3.3",
-    "eslint": "^8.9.0",
-    "mocha": "^9.2.1",
-    "typescript": "^4.5.5"
+    "@types/node": "^20.7.1",
+    "c8": "^8.0.1",
+    "debug": "^4.3.4",
+    "eslint": "^8.50.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2"
   }
 }

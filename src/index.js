@@ -139,11 +139,11 @@ class Vault {
   _cipher (secret, id, salt, derivedKey) {
     const { key, hmacKey, iv } = derivedKey
     const cipherF = crypto.createCipheriv(CIPHER, key, iv)
-    const ciphertext = Buffer.concat([
-      cipherF.update(secret),
-      cipherF.update(pkcs7.pad(secret.length, 16)),
-      cipherF.final()
-    ])
+    const finalInput = Buffer.concat([
+      Buffer.from(secret, 'utf-8'),
+      pkcs7.pad(Buffer.from(secret, 'utf-8').length, 16),
+    ]);
+    const ciphertext = Buffer.concat([cipherF.update(finalInput), cipherF.final()]);
 
     const hmac = this._hmac(hmacKey, ciphertext)
     const hex = [ salt, hmac, ciphertext ].map(buf => buf.toString('hex')).join('\n')

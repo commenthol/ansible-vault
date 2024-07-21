@@ -129,6 +129,19 @@ describe('ansible-vault', function () {
           strictEqual(_secret, secret)
         })
     })
+
+    it('shall encrypt and decrypt with special characters', function () {
+      const v = new Vault({ password })
+      const secretWithSpecialChars = "pa§§w0rd"
+      return v.encrypt(secretWithSpecialChars, 'prod')
+          .then(_vault => {
+            log(_vault)
+            return v.decrypt(_vault)
+          })
+          .then(_secret => {
+            strictEqual(_secret, secretWithSpecialChars)
+          })
+    })
   })
 
   describe('1.2', function () {
@@ -183,6 +196,8 @@ describe('ansible-vault', function () {
         })
     })
   })
+
+
 
   describe('sync operations', function () {
     it('shall decrypt synchronously', function () {

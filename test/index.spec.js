@@ -197,8 +197,6 @@ describe('ansible-vault', function () {
     })
   })
 
-
-
   describe('sync operations', function () {
     it('shall decrypt synchronously', function () {
       const v = new Vault({ password })

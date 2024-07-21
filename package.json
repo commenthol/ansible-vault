@@ -34,11 +34,11 @@
     "binascii": "0.0.2"
   },
   "devDependencies": {
-    "@types/node": "^20.7.1",
-    "c8": "^8.0.1",
-    "debug": "^4.3.4",
-    "eslint": "^8.50.0",
-    "mocha": "^10.2.0",
-    "typescript": "^5.2.2"
+    "@types/node": "^20.14.11",
+    "c8": "^10.1.2",
+    "debug": "^4.3.5",
+    "eslint": "^8.57.0",
+    "mocha": "^10.7.0",
+    "typescript": "^5.5.3"
   }
 }

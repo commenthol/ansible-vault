@@ -54,11 +54,11 @@ export class Vault {
      */
     private _derivedKeySync;
     /**
-     *
+     * @private
      * @param {Buffer} derivedKey
      * @returns {DerivedKey}
      */
-    _deriveKey(derivedKey: Buffer): DerivedKey;
+    private _deriveKey;
     /**
      * Encrypt `secret` text
      * @param {string} secret
@@ -88,7 +88,7 @@ export class Vault {
      * @param {DerivedKey} derivedKey
      * @returns
      */
-    private _decypher;
+    private _decipher;
     /**
      * @private
      * @param {string|undefined} id optional id

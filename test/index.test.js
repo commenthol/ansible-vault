@@ -1,5 +1,5 @@
 const { strictEqual } = require('assert')
-const { Vault } = require('..')
+const { Vault } = require('../src/index.js')
 const log = require('debug')('test')
 
 const vault = `$ANSIBLE_VAULT;1.1;AES256
@@ -37,6 +37,13 @@ const vaultIdCLRF = `$ANSIBLE_VAULT;1.2;AES256;prod\r
 3863303135376437660a346135623536376631666130376336306263376666396336323261306135\r
 39373133326337656366313132363763363465343364613461393763343731313363`
 
+const vaultBadPkcs7Padding = `$ANSIBLE_VAULT;1.1;AES256
+39616236653463303233376233653238346662373130323030353739386531666137626235653731
+6664386130373163613138623161333861373531353863650a323233303933323963623834383730
+39633230636265346538663164393832613737363533643863313034613931653762616264616230
+3430316130363330300a353562613239346662343062623335396136633938643930306638323261
+3239353563626639`
+
 describe('ansible-vault', function () {
   const secret = 'password: superSecret123!'
   const password = 'pa$$w0rd'
@@ -48,152 +55,147 @@ describe('ansible-vault', function () {
       strictEqual(v[PASSWORD], undefined)
     })
 
-    it('shall throw on wrong header', function () {
+    it('shall throw on wrong header', async function () {
       const v = new Vault({ password })
       const vault = ''
-      return v.decrypt(vault)
-        .catch(err => {
-          strictEqual(err.message, 'Bad vault header')
-        })
+      try {
+        await v.decrypt(vault)
+        throw new Error()
+      } catch (err) {
+        strictEqual(err.message, 'Bad vault header')
+      }
     })
 
-    it('shall throw on wrong version', function () {
+    it('shall throw on wrong version', async function () {
       const v = new Vault({ password })
       const vault = '$ANSIBLE_VAULT;1.0;AES256\n6135643365643261'
-      return v.decrypt(vault)
-        .catch(err => {
-          strictEqual(err.message, 'Bad vault header')
-        })
+      try {
+        await v.decrypt(vault)
+        throw new Error()
+      } catch (err) {
+        strictEqual(err.message, 'Bad vault header')
+      }
     })
 
-    it('shall throw on wrong cipher', function () {
+    it('shall throw on wrong cipher', async function () {
       const v = new Vault({ password })
       const vault = '$ANSIBLE_VAULT;1.0;AES128\n6135643365643261'
-      return v.decrypt(vault)
-        .catch(err => {
-          strictEqual(err.message, 'Bad vault header')
-        })
+      try {
+        await v.decrypt(vault)
+        throw new Error()
+      } catch (err) {
+        strictEqual(err.message, 'Bad vault header')
+      }
     })
 
-    it('shall throw on missing content', function () {
+    it('shall throw on missing content', async function () {
       const v = new Vault({ password })
       const vault = '$ANSIBLE_VAULT;1.1;AES256\n'
-      return v.decrypt(vault)
-        .catch(err => {
-          strictEqual(err.message, 'Invalid vault')
-        })
+      try {
+        await v.decrypt(vault)
+        throw new Error()
+      } catch (err) {
+        strictEqual(err.message, 'Invalid vault')
+      }
     })
 
-    it('shall throw on compromised integrity', function () {
+    it('shall throw on compromised integrity', async function () {
       const v = new Vault({ password })
-      return v.decrypt(vaultBadIntegrity)
-        .catch(err => {
-          strictEqual(err.message, 'Integrity check failed')
-        })
+      try {
+        await v.decrypt(vaultBadIntegrity)
+        throw new Error()
+      } catch (err) {
+        strictEqual(err.message, 'Integrity check failed')
+      }
     })
 
-    it('shall throw on bad chars', function () {
+    it('shall throw on bad chars', async function () {
       const v = new Vault({ password })
-      return v.decrypt(vaultBadValues)
-        .catch(err => {
-          strictEqual(err.message, 'Integrity check failed')
-        })
+      try {
+        await v.decrypt(vaultBadValues)
+        throw new Error()
+      } catch (err) {
+        strictEqual(err.message, 'Integrity check failed')
+      }
     })
 
-    it('shall throw on missing password', function () {
+    it('shall throw on missing password', async function () {
       const v = new Vault({})
-      return v.encrypt('vault')
-        .catch(err => {
-          strictEqual(err.message, 'No password')
-        })
+      try {
+        await v.encrypt('vault')
+        throw new Error()
+      } catch (err) {
+        strictEqual(err.message, 'No password')
+      }
     })
   })
 
   describe('1.1', function () {
-    it('shall decrypt', function () {
+    it('shall decrypt', async function () {
       const v = new Vault({ password })
-      return v.decrypt(vault)
-        .then(_secret => {
-          strictEqual(_secret, secret)
-        })
+      const _secret = await v.decrypt(vault)
+      strictEqual(_secret, secret)
     })
 
-    it('shall encrypt and decrypt', function () {
+    it('shall encrypt and decrypt', async function () {
       const v = new Vault({ password })
-      return v.encrypt(secret)
-        .then(_vault => {
-          log(_vault)
-          return v.decrypt(_vault)
-        })
-        .then(_secret => {
-          strictEqual(_secret, secret)
-        })
+      const _vault = await v.encrypt(secret)
+      log(_vault)
+      const _secret = await v.decrypt(_vault)
+      strictEqual(_secret, secret)
     })
 
-    it('shall encrypt and decrypt with special characters', function () {
+    it('shall encrypt and decrypt with special characters', async function () {
       const v = new Vault({ password })
-      const secretWithSpecialChars = "pa§§w0rd"
-      return v.encrypt(secretWithSpecialChars, 'prod')
-          .then(_vault => {
-            log(_vault)
-            return v.decrypt(_vault)
-          })
-          .then(_secret => {
-            strictEqual(_secret, secretWithSpecialChars)
-          })
+      const secretWithSpecialChars = 'superduperpa§§'
+      const _vault = await v.encrypt(secretWithSpecialChars)
+      const _secret = await v.decrypt(_vault)
+      strictEqual(_secret, secretWithSpecialChars)
+    })
+
+    it('should decrypt vault with bad padding', async function () {
+      const v = new Vault({ password })
+      const _secret = await v.decrypt(vaultBadPkcs7Padding)
+      strictEqual(_secret, 'superduperpa§§§')
     })
   })
 
-  describe('1.2', function () {
-    it('shall decrypt', function () {
+  describe('1.2', async function () {
+    it('shall decrypt', async function () {
       const v = new Vault({ password })
-      return v.decrypt(vaultId, 'prod')
-        .then(_secret => {
-          strictEqual(_secret, secret)
-        })
-    })
-    it('shall decrypt with CLRF', function () {
-      const v = new Vault({ password })
-      return v.decrypt(vaultIdCLRF, 'prod')
-        .then(_secret => {
-          strictEqual(_secret, secret)
-        })
+      const _secret = await v.decrypt(vaultId, 'prod')
+      strictEqual(_secret, secret)
     })
 
-
-    it('shall not decrypt if id doesn\'t match', function () {
+    it('shall decrypt with CLRF', async function () {
       const v = new Vault({ password })
-      return v.decrypt(vaultId, 'test')
-        .then(_secret => {
-          strictEqual(_secret, undefined)
-        })
+      const _secret = await v.decrypt(vaultIdCLRF, 'prod')
+      strictEqual(_secret, secret)
     })
 
-    it('shall encrypt and decrypt', function () {
+    it("shall not decrypt if id doesn't match", async function () {
       const v = new Vault({ password })
-      return v.encrypt(secret, 'prod')
-        .then(_vault => {
-          log(_vault)
-          strictEqual(_vault.substring(0, 30), '$ANSIBLE_VAULT;1.2;AES256;prod')
-          return v.decrypt(_vault)
-        })
-        .then(_secret => {
-          strictEqual(_secret, secret)
-        })
+      const _secret = await v.decrypt(vaultId, 'test')
+      strictEqual(_secret, undefined)
     })
 
-    it('shall encrypt and decrypt (block size fits)', function () {
+    it('shall encrypt and decrypt', async function () {
+      const v = new Vault({ password })
+      const _vault = await v.encrypt(secret, 'prod')
+      log(_vault)
+      strictEqual(_vault.substring(0, 30), '$ANSIBLE_VAULT;1.2;AES256;prod')
+      const _secret = await v.decrypt(_vault)
+      strictEqual(_secret, secret)
+    })
+
+    it('shall encrypt and decrypt (block size fits)', async function () {
       const v = new Vault({ password })
       const secret = 'abcdefgh'
-      return v.encrypt(secret, 'prod')
-        .then(_vault => {
-          log(_vault)
-          strictEqual(_vault.substring(0, 30), '$ANSIBLE_VAULT;1.2;AES256;prod')
-          return v.decrypt(_vault)
-        })
-        .then(_secret => {
-          strictEqual(_secret, secret)
-        })
+      const _vault = await v.encrypt(secret, 'prod')
+      log(_vault)
+      strictEqual(_vault.substring(0, 30), '$ANSIBLE_VAULT;1.2;AES256;prod')
+      const _secret = await v.decrypt(_vault)
+      strictEqual(_secret, secret)
     })
   })
 
@@ -208,5 +210,4 @@ describe('ansible-vault', function () {
       strictEqual(v.decryptSync(v.encryptSync(secret)), secret)
     })
   })
-
 })

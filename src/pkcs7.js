@@ -25,7 +25,7 @@ function pad (messageLength, blocksize) {
       return padded
     }
   }
-  return padded.slice(0, len - byte)
+  return padded.subarray(0, len - byte)
 }
 
 module.exports = {

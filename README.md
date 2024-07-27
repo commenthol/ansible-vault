@@ -10,7 +10,7 @@
 encrypt
 
 ```js
-const { Vault } = require('ansible-vault')
+import { Vault } from 'ansible-vault'
 
 const v = new Vault({ password: 'pa$$w0rd' })
 v.encrypt('superSecret123').then(console.log)
@@ -28,7 +28,7 @@ const vault = v.encryptSync('superSecret123')
 decrypt
 
 ```js
-const { Vault } = require('ansible-vault')
+import { Vault } from 'ansible-vault'
 
 const vault = `$ANSIBLE_VAULT;1.1;AES256
 33383239333036363833303565653032383832663162356533343630623030613133623032636566

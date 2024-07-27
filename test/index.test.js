@@ -1,6 +1,8 @@
-const { strictEqual } = require('assert')
-const { Vault } = require('../src/index.js')
-const log = require('debug')('test')
+import { strictEqual } from 'assert'
+import { Vault } from '../src/index.js'
+import debug from 'debug'
+
+const log = debug('test')
 
 const vault = `$ANSIBLE_VAULT;1.1;AES256
 37333730633265356131656330306537623666613631386461653831666535626462396366663434

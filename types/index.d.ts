@@ -1,13 +1,3 @@
-export type DerivedKey = {
-    key: Buffer;
-    hmacKey: Buffer;
-    iv: Buffer;
-};
-export type Unpacked = {
-    salt: Buffer;
-    hmac: Buffer;
-    ciphertext: Buffer;
-};
 /**
  * @typedef DerivedKey
  * @property {Buffer} key
@@ -119,5 +109,18 @@ export class Vault {
     decryptSync(vault: string, id: string | undefined): string | undefined;
     [PASSWORD]: string;
 }
+export type DerivedKey = {
+    key: Buffer;
+    hmacKey: Buffer;
+    iv: Buffer;
+};
+export type Unpacked = {
+    salt: Buffer;
+    hmac: Buffer;
+    ciphertext: Buffer;
+};
 declare const PASSWORD: unique symbol;
-export {};
+import { hexlify } from './binascii.js';
+import { unhexlify } from './binascii.js';
+import * as pkcs7 from './pkcs7.js';
+export { hexlify, unhexlify, pkcs7 };

@@ -1,5 +1,5 @@
 [![NPM version](https://img.shields.io/npm/v/ansible-vault) ![npm](https://img.shields.io/npm/dm/ansible-vault)](https://www.npmjs.com/package/ansible-vault/)
-[![Build Status](https://github.com/commenthol/ansible-vault/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/commenthol/ansible-vault/actions/workflows/ci.yml?query=branch%3Amaster)
+[![Build Status](https://github.com/commenthol/ansible-vault/actions/workflows/ci.yml/badge.svg)](https://github.com/commenthol/ansible-vault/actions/workflows/ci.yml)
 
 # ansible-vault
 

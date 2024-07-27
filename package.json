@@ -21,9 +21,18 @@
   "module": "./src/index.js",
   "types": "./types/index.d.ts",
   "files": [
+    "lib",
     "src",
     "types"
   ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./lib/index.cjs",
+      "types": "./types/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "clear": "rimraf lib types",
@@ -33,9 +42,7 @@
     "test": "mocha",
     "types": "tsc"
   },
-  "dependencies": {
-    "binascii": "0.0.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.14.12",
     "c8": "^10.1.2",

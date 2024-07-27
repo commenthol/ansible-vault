@@ -1,9 +1,8 @@
 import { promisify } from 'util'
 import crypto from 'crypto'
-import binascii from 'binascii'
+import { hexlify, unhexlify } from './binascii.js'
 import * as pkcs7 from './pkcs7.js'
 
-const { hexlify, unhexlify } = binascii
 const pbkdf2 = promisify(crypto.pbkdf2)
 
 const HEADER = '$ANSIBLE_VAULT'
@@ -195,6 +194,7 @@ export class Vault {
 
     return (
       header +
+      // @ts-expect-error
       hexlify(hex)
         .match(/.{1,80}/g)
         .join('\n')
@@ -253,3 +253,5 @@ export class Vault {
     return this._decipher(unpacked, derivedKey)
   }
 }
+
+export { hexlify, unhexlify, pkcs7 }

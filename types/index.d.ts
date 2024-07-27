@@ -120,4 +120,7 @@ export type Unpacked = {
     ciphertext: Buffer;
 };
 declare const PASSWORD: unique symbol;
-export {};
+import { hexlify } from './binascii.js';
+import { unhexlify } from './binascii.js';
+import * as pkcs7 from './pkcs7.js';
+export { hexlify, unhexlify, pkcs7 };

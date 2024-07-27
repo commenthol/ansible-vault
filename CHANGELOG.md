@@ -1,3 +1,9 @@
+# 1.3.0-0 (2024-07-27)
+
+- feat: add binascii functions for zero dependencies (#633af73)
+- feat: change to ESM (#0316412)
+- docs: fix CI status badge (#a9f74c7)
+
 # 1.2.0 (2024-07-27)
 
 - feat: fix pkcs7 padding for encryption to match compatibility with ansible-vault (#5dc1426)

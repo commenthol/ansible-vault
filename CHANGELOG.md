@@ -1,5 +1,6 @@
-# 1.2.0-0 (2024-07-24)
+# 1.2.0 (2024-07-27)
 
+- feat: fix pkcs7 padding for encryption to match compatibility with ansible-vault (#5dc1426)
 - Refactor test/index.spec.js (#bc2ae9b)
 - Add test for encryption/decryption with special characters (#7d88ba0)
 - chore: github actions with node 20, 22 (#6fb9e28)

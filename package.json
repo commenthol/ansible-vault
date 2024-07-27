@@ -1,6 +1,6 @@
 {
   "name": "ansible-vault",
-  "version": "1.2.0",
+  "version": "1.3.0-0",
   "description": "An ansible vault compatible en- and decryption library for javascript",
   "keywords": [
     "ansible",
@@ -16,29 +16,41 @@
   },
   "license": "MIT",
   "author": "commenthol <commenthol@gmail.com>",
-  "main": "src",
-  "types": "types",
+  "type": "module",
+  "main": "./lib/index.cjs",
+  "module": "./src/index.js",
+  "types": "./types/index.d.ts",
   "files": [
     "src",
     "types"
   ],
   "scripts": {
-    "ci": "npm run coverage && npm run lint && npm run types",
+    "build": "rollup -c rollup.config.js",
+    "clear": "rimraf lib types",
+    "ci": "npm-run-all clear build coverage lint types",
     "coverage": "c8 -r lcov -r html -r text mocha",
     "lint": "eslint src test",
-    "prepublishOnly": "npm run ci",
     "test": "mocha",
-    "types": "rm -r types; tsc"
+    "types": "tsc"
   },
   "dependencies": {
     "binascii": "0.0.2"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.14.12",
     "c8": "^10.1.2",
-    "debug": "^4.3.5",
-    "eslint": "^8.57.0",
+    "debug": "^4.3.6",
+    "eslint": "^9.7.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.8.0",
     "mocha": "^10.7.0",
-    "typescript": "^5.5.3"
+    "npm-run-all2": "^6.2.2",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.19.1",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

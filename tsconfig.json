@@ -1,18 +1,21 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "checkJs": true,
     "declaration": true,
     "declarationDir": "types",
-    "moduleResolution": "node",
+    "emitDeclarationOnly": true, 
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noEmitOnError": false,
     "noImplicitAny": false,
+    "skipLibCheck": true,
     "strict": true,
-    "target": "ES2021",
-    "emitDeclarationOnly": true,
-    "noEmitOnError": true
+    "target": "esnext",
   },
   "include": [
-    "**/*.js"
+    "src",
   ],
   "exclude": [
     "bin",

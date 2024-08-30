@@ -1,46 +1,45 @@
-const assert = require('assert')
-const { pad, unpad } = require('../src/pkcs7')
+import assert from 'assert'
+import { pad, unpad } from '../src/pkcs7.js'
 
 describe('pkcs#7', function () {
   describe('pad', function () {
     it('shall throw if blocksize is greater 256', function () {
       const b = Buffer.from('a')
       assert.throws(function () {
-        Buffer.concat([
-          b,
-          pad(b.length, 512)
-        ])
+        Buffer.concat([b, pad(b.length, 512)])
       }, /can't pad blocks larger 256 bytes/)
     })
 
     it('shall pad a buffer of length 1', function () {
       const b = Buffer.from('a')
-      const padded = Buffer.concat([
-        b,
-        pad(b.length, 8)
-      ])
+      const padded = Buffer.concat([b, pad(b.length, 8)])
       assert.strictEqual(padded.length, 8)
-      assert.deepStrictEqual(padded, Buffer.from(new Uint8Array([97, 7, 7, 7, 7, 7, 7, 7])))
+      assert.deepStrictEqual(
+        padded,
+        Buffer.from(new Uint8Array([97, 7, 7, 7, 7, 7, 7, 7]))
+      )
     })
 
     it('shall pad a buffer of length 6', function () {
       const b = Buffer.from('aaaaaa')
-      const padded = Buffer.concat([
-        b,
-        pad(b.length, 8)
-      ])
+      const padded = Buffer.concat([b, pad(b.length, 8)])
       assert.strictEqual(padded.length, 8)
-      assert.deepStrictEqual(padded, Buffer.from(new Uint8Array([97, 97, 97, 97, 97, 97, 2, 2])))
+      assert.deepStrictEqual(
+        padded,
+        Buffer.from(new Uint8Array([97, 97, 97, 97, 97, 97, 2, 2]))
+      )
     })
 
     it('shall pad if block size fits', function () {
       const b = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])
-      const padded = Buffer.concat([
-        b,
-        pad(b.length, 8)
-      ])
+      const padded = Buffer.concat([b, pad(b.length, 8)])
       assert.strictEqual(padded.length, 16)
-      assert.deepStrictEqual(padded, Buffer.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8])))
+      assert.deepStrictEqual(
+        padded,
+        Buffer.from(
+          new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8])
+        )
+      )
     })
   })
 
@@ -79,28 +78,19 @@ describe('pkcs#7', function () {
   describe('pad-unpad', function () {
     it('block size does not fit', function () {
       const b = new Uint8Array([7])
-      const padded = Buffer.concat([
-        b,
-        pad(b.length, 8)
-      ])
+      const padded = Buffer.concat([b, pad(b.length, 8)])
       const unpadded = unpad(padded, 8)
       assert.deepStrictEqual(unpadded, Buffer.from(b))
     })
     it('block size does not fit len=3', function () {
       const b = new Uint8Array([5, 5, 5])
-      const padded = Buffer.concat([
-        b,
-        pad(b.length, 8)
-      ])
+      const padded = Buffer.concat([b, pad(b.length, 8)])
       const unpadded = unpad(padded, 8)
       assert.deepStrictEqual(unpadded, Buffer.from(b))
     })
     it('block size fits', function () {
       const b = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])
-      const padded = Buffer.concat([
-        b,
-        pad(b.length, 8)
-      ])
+      const padded = Buffer.concat([b, pad(b.length, 8)])
       const unpadded = unpad(padded, 8)
       assert.deepStrictEqual(unpadded, Buffer.from(b))
     })

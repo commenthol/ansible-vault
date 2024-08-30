@@ -1,4 +1,4 @@
-# 1.3.0-0 (2024-07-27)
+# 1.3.0 (2024-07-27)
 
 - feat: add binascii functions for zero dependencies (#633af73)
 - feat: change to ESM (#0316412)
